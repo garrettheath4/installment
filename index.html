@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Installment</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        /* Light mode colors */
+        background-color: white;
+        color: black;
+    }
+    @media (prefers-color-scheme: dark) {
+        /* Dark mode colors */
+        body {
+            background-color: #131516;
+            color: white;
+        }
+        input, textarea {
+            background-color: #1d2021;
+            color: white;
+        }
+    }
+    label {
+        font-weight: bold;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+    .priority-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .priority-label {
+        margin-right: 10px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #AAA;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button.primary {
+        background-color: #4CAF50;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    textarea {
+        width: 100%;
+        height: 465px;
+        padding: 8px;
+        resize: none;
+    }
+</style>
+</head>
+<body>
+
+<label for="totalAmount">Total Dollar Amount:</label>
+<input type="text" id="totalAmount" placeholder="300.00" onkeyup="generateText();">
+
+<label for="transactionName">Transaction Name:</label>
+<input type="text" id="transactionName" placeholder="credit card charge" onkeyup="generateText();">
+
+<div class="priority-container">
+    <span class="priority-label">Priority:</span>
+    <input type="radio" id="priority1" name="priority" onchange="generateText()" value="1">
+    <label for="priority1">1</label>
+    <input type="radio" id="priority2" name="priority" onchange="generateText()" value="2">
+    <label for="priority2">2</label>
+    <input type="radio" id="priority3" name="priority" onchange="generateText()" value="3" checked>
+    <label for="priority3">3</label>
+    <input type="radio" id="priority4" name="priority" onchange="generateText()" value="4">
+    <label for="priority4">4</label>
+</div>
+
+<textarea id="generatedText" readonly onclick="this.select();"></textarea>
+
+<button class="primary" onclick="copyToClipboard()">Copy Text</button>
+<button onclick="generateText()">Generate Text</button>
+
+<script>
+function generateText() {
+    var totalAmount = parseFloat(document.getElementById("totalAmount").value);
+    var transactionName = document.getElementById("transactionName").value;
+    var priority = document.querySelector('input[name="priority"]:checked').value;
+
+    // Use default values if fields are empty
+    if (!totalAmount) {
+        totalAmount = parseFloat(document.getElementById("totalAmount").placeholder);
+    }
+    if (!transactionName.trim()) {
+        transactionName = document.getElementById("transactionName").placeholder;
+    }
+
+    if (isNaN(totalAmount) || totalAmount <= 0 || transactionName.trim() === '') {
+        document.getElementById("generatedText").value = "Please enter valid inputs.";
+        return;
+    }
+
+    const integerAmount = Math.floor(totalAmount);
+    const lineBaseAmount = Math.floor(integerAmount / 30);
+    const remainder = integerAmount % 30;
+
+    var lines = [];
+
+    for (var i = 0; i < 30; i++) {
+        var lineAmountNum = lineBaseAmount;
+
+        if (i === 0) {
+            lineAmountNum += totalAmount - integerAmount;
+        } else if (i <= remainder) {
+            lineAmountNum += 1;
+        }
+
+        const lineAmountText = lineAmountNum.toFixed(2).replace(/\.00$/, "");
+
+        const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + i);
+        const formattedDate = (currentDate.getMonth() + 1) + '/' + currentDate.getDate();
+
+        lines.push(["$" + lineAmountText, transactionName, "p" + priority, formattedDate].join(" "));
+    }
+
+    document.getElementById("generatedText").value = lines.join("\n");
+}
+
+function copyToClipboard() {
+    var copyText = document.getElementById("generatedText");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); /* For mobile devices */
+    document.execCommand("copy");
+}
+</script>
+
+</body>
+</html>
+
