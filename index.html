@@ -117,7 +117,13 @@ function generateText() {
         currentDate.setDate(currentDate.getDate() + i);
         const formattedDate = (currentDate.getMonth() + 1) + '/' + currentDate.getDate();
 
-        lines.push(["$" + lineAmountText, "for", transactionName, "(" + (i+1) + " of 30)", "p" + priority, formattedDate].join(" "));
+        lines.push([
+            "$" + lineAmountText,
+            "for " + transactionName,
+            "(" + (i+1) + " of 30)",
+            "p" + priority,
+            formattedDate
+        ].filter(s => s != "p4").join(" "));
     }
 
     document.getElementById("generatedText").value = lines.join("\n");
@@ -160,4 +166,5 @@ function copyToClipboard() {
 <github-ribbon link="https://github.com/garrettheath4/installment" new-window="True"></github-ribbon>
 
 </body>
+<!-- vim: set tabstop=4 shiftwidth=4 softtabstop=4 expandtab: -->
 </html>
